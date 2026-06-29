@@ -83,19 +83,20 @@ npm run test:e2e
 ```yaml
 app:
   name: demo-shop
+  language: typescript
 
 deploy:
-  type: docker-compose
-  composeFile: docker-compose.yml
+  type: helm
+  localFallback: docker-compose
 
 entrypoints:
   web:
     baseUrl: http://localhost:5173
   api:
-    baseUrl: http://localhost:3000/api
+    baseUrl: http://localhost:3001/api
 
 dependencies:
-  payment:
+  payment-service:
     mode: mock
     provider: wiremock
 ```
