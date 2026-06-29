@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/payments/authorize"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "paymentId": "mock-pay-001",
+      "status": "AUTHORIZED"
+    }
+  }
+}
