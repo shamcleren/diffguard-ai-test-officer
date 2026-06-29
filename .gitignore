@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+reports/*.zip
+reports/*.webm
+reports/*.png
+reports/*.trace
+.env
+.env.local
+.DS_Store
