@@ -1,0 +1,31 @@
+diff --git a/apps/demo-shop-backend/src/coupon.ts b/apps/demo-shop-backend/src/coupon.ts
+index 1111111..2222222 100644
+--- a/apps/demo-shop-backend/src/coupon.ts
++++ b/apps/demo-shop-backend/src/coupon.ts
+@@ -1,5 +1,16 @@
++export function calculateFinalPrice(input) {
++  const couponDiscount = input.couponCode === 'FULL100_MINUS20' && input.originalPrice >= 100 ? 20 : 0;
++  const memberRate = input.userType === 'vip' ? 0.95 : 1;
++  const discountedByMember = input.originalPrice * memberRate;
++  return Math.max(0, discountedByMember - couponDiscount);
++}
++
+ diff --git a/apps/demo-shop-backend/src/app.ts b/apps/demo-shop-backend/src/app.ts
+ index 3333333..4444444 100644
+ --- a/apps/demo-shop-backend/src/app.ts
+ +++ b/apps/demo-shop-backend/src/app.ts
+@@ -10,6 +10,12 @@
++app.post('/api/orders/preview', (req, res) => {
++  const price = calculateFinalPrice(req.body);
++  res.json({ finalPrice: price });
++});
++
+ diff --git a/apps/demo-shop-frontend/src/pages/Checkout.tsx b/apps/demo-shop-frontend/src/pages/Checkout.tsx
+ index 5555555..6666666 100644
+ --- a/apps/demo-shop-frontend/src/pages/Checkout.tsx
+ +++ b/apps/demo-shop-frontend/src/pages/Checkout.tsx
+@@ -20,6 +20,10 @@
++await fetch('/api/orders/preview', {
++  method: 'POST',
++  body: JSON.stringify({ couponCode: 'FULL100_MINUS20', userType: 'vip' })
++});
