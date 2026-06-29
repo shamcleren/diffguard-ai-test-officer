@@ -1,0 +1,12 @@
+backend:
+  image: demo-shop-backend:local
+  port: 3001
+  paymentBaseUrl: http://payment-mock:8080
+
+frontend:
+  image: demo-shop-frontend:local
+  port: 80
+
+paymentMock:
+  image: wiremock/wiremock:3.9.2
+  port: 8080
