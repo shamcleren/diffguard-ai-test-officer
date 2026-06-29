@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-shop-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-shop-backend
+  template:
+    metadata:
+      labels:
+        app: demo-shop-backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          env:
+            - name: PORT
+              value: "{{ .Values.backend.port }}"
+            - name: PAYMENT_BASE_URL
+              value: "{{ .Values.backend.paymentBaseUrl }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-shop-backend
+spec:
+  selector:
+    app: demo-shop-backend
+  ports:
+    - port: 3001
+      targetPort: {{ .Values.backend.port }}
