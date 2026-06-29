@@ -1,0 +1,54 @@
+app:
+  name: demo-shop
+  language: typescript
+  repoRoot: .
+
+deploy:
+  type: helm
+  chartPath: ./deploy/chart
+  valuesFile: ./deploy/chart/values.yaml
+  namespacePrefix: ai-test
+  localFallback: docker-compose
+
+healthCheck:
+  url: http://localhost:3001/health
+  timeoutSeconds: 120
+
+entrypoints:
+  web:
+    baseUrl: http://localhost:5173
+  api:
+    baseUrl: http://localhost:3001/api
+
+observability:
+  enabled: true
+  propagationHeaders:
+    - x-ai-test-run-id
+    - traceparent
+  logQuery:
+    mode: local-process-log
+  traceQuery:
+    mode: optional-otel-collector
+    endpoint: http://localhost:4318
+
+dependencies:
+  payment-service:
+    mode: mock
+    provider: wiremock
+    baseUrl: http://localhost:8089
+    mappings: ./mocks/payment/mappings
+
+seed:
+  command: npm run seed -w apps/demo-shop-backend
+
+test:
+  defaultUser:
+    username: test_vip
+    password: password123
+  evidence:
+    screenshots: true
+    video: true
+    playwrightTrace: true
+    apiResponses: true
+    serviceLogs: true
+    mockRequests: true
