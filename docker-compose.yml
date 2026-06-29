@@ -1,0 +1,30 @@
+services:
+  payment-mock:
+    image: wiremock/wiremock:3.9.2
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./mocks/payment:/home/wiremock
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/demo-shop-backend/Dockerfile
+    environment:
+      PORT: "3001"
+      PAYMENT_BASE_URL: http://payment-mock:8080
+    ports:
+      - "3001:3001"
+    depends_on:
+      - payment-mock
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/demo-shop-frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:3001/api
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
