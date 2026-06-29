@@ -1,0 +1,32 @@
+{
+  "testRunId": "sample-run",
+  "createdAt": "2026-06-29T00:00:00.000Z",
+  "changeSummary": "优惠券、订单金额计算与结算页展示变更",
+  "matrix": [
+    {
+      "id": "M-001",
+      "claim": "VIP 用户可在满 100 减 20 后叠加 95 折，100 元订单最终金额应为 76.00。",
+      "risk": "high",
+      "layers": ["api", "observability"],
+      "status": "failed"
+    },
+    {
+      "id": "M-002",
+      "claim": "结算页展示金额应与订单预览 API 返回金额一致。",
+      "risk": "high",
+      "layers": ["browser", "api"],
+      "status": "failed"
+    }
+  ],
+  "evidence": [
+    {
+      "caseId": "M-001",
+      "status": "failed",
+      "artifacts": {
+        "apiCalls": [{"method": "POST", "url": "/api/orders/preview", "status": 200, "response": {"finalPrice": 75}}],
+        "logs": [{"service": "demo-shop-backend", "event": "order.preview.calculated"}],
+        "spans": [{"traceId": "sample-trace", "spanName": "OrderController.preview"}]
+      }
+    }
+  ]
+}
