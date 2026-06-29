@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-shop-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-shop-frontend
+  template:
+    metadata:
+      labels:
+        app: demo-shop-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: {{ .Values.frontend.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-shop-frontend
+spec:
+  selector:
+    app: demo-shop-frontend
+  ports:
+    - port: 5173
+      targetPort: {{ .Values.frontend.port }}
