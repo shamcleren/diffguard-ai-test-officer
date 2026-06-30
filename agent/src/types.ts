@@ -2,6 +2,7 @@ export type RiskLevel = 'low' | 'medium' | 'high';
 export type TestLayer = 'api' | 'browser' | 'database' | 'mock' | 'observability';
 export type TestStatus = 'passed' | 'failed' | 'skipped' | 'not_run';
 export type Decision = '建议合并' | '不建议合并' | '需要人工确认';
+export type FailureCategory = 'business' | 'environment' | 'test' | 'mock' | 'observability' | 'unknown';
 
 export interface WorkflowInput {
   diffPath: string;
@@ -62,6 +63,29 @@ export interface DeployContract {
   test?: Record<string, unknown>;
 }
 
+export interface RuntimeEvidence {
+  apiCalls?: Array<{
+    name?: string;
+    method: string;
+    url: string;
+    status?: number;
+    durationMs?: number;
+    request?: unknown;
+    response?: unknown;
+    error?: string;
+  }>;
+  mockRequests?: Array<Record<string, unknown>>;
+  logs?: Array<Record<string, unknown>>;
+  spans?: Array<Record<string, unknown>>;
+  files?: Array<{ kind: 'screenshot' | 'trace' | 'video' | 'report' | 'other'; path: string }>;
+  process?: {
+    command: string;
+    exitCode: number;
+    stdoutTail?: string;
+    stderrTail?: string;
+  };
+}
+
 export interface TestMatrixItem {
   id: string;
   source: 'diff' | 'requirement' | 'regression' | 'observability';
@@ -73,6 +97,9 @@ export interface TestMatrixItem {
   evidenceRequired: string[];
   status: TestStatus;
   failureReason?: string;
+  failureCategory?: FailureCategory;
+  fixSuggestion?: string;
+  runtimeEvidence?: RuntimeEvidence;
 }
 
 export interface EvidenceItem {
@@ -86,8 +113,19 @@ export interface EvidenceItem {
     logs?: Array<Record<string, unknown>>;
     mockRequests?: Array<Record<string, unknown>>;
     spans?: Array<Record<string, unknown>>;
+    files?: Array<Record<string, unknown>>;
+    process?: Record<string, unknown>;
   };
   notes?: string[];
+}
+
+export interface FailureAnalysisItem {
+  caseId: string;
+  category: FailureCategory;
+  conclusion: string;
+  evidence: string[];
+  suspectedFiles: string[];
+  suggestedFixes: string[];
 }
 
 export interface EvidenceBundle {
@@ -96,6 +134,7 @@ export interface EvidenceBundle {
   changeSummary: string;
   matrix: TestMatrixItem[];
   evidence: EvidenceItem[];
+  failureAnalysis?: FailureAnalysisItem[];
 }
 
 export interface WorkflowResult {
