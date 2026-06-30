@@ -11,6 +11,8 @@ InputReceived
   ↓
 ContextCollected
   ↓
+ProjectDetected
+  ↓
 DeployContractResolved
   ↓
 EnvironmentReady
@@ -71,23 +73,30 @@ npm run test:e2e
 ## 黑客松演示主线
 
 1. 输入 PR diff 或需求文档。
-2. Agent 读取 `ai-test.yaml`，解析部署契约。
-3. Agent 识别变更风险，生成测试矩阵。
-4. 使用 API、浏览器、Mock、日志和可观测数据完成验证。
-5. 输出可决策报告：建议合并 / 不建议合并，以及失败证据和改造建议。
+2. Agent 自动识别项目组件、运行时和测试入口。
+3. Agent 读取 `ai-test.yaml`，解析部署契约。
+4. Agent 识别变更风险，生成测试矩阵。
+5. 使用 API、浏览器、Mock、日志和可观测数据完成验证。
+6. 输出可决策报告：建议合并 / 不建议合并，以及失败证据和改造建议。
 
 ## 标准接入契约
 
-仓库根目录的 `ai-test.yaml` 描述了 Agent 如何部署、探活、mock 外部依赖、执行种子数据和定位入口：
+仓库根目录的 `ai-test.yaml` 描述了 Agent 如何部署、探活、mock 外部依赖、执行种子数据和定位入口。项目语言 / 运行时默认自动识别，配置只作为覆盖兜底。
 
 ```yaml
 app:
   name: demo-shop
-  language: typescript
+  repoRoot: .
 
 deploy:
   type: helm
   localFallback: docker-compose
+
+project:
+  detection:
+    enabled: true
+    confidenceThreshold: 0.75
+    overrides: {}
 
 entrypoints:
   web:
@@ -101,11 +110,26 @@ dependencies:
     provider: wiremock
 ```
 
+## 自动识别策略
+
+DiffGuard 不要求用户在 `ai-test.yaml` 中强制声明 `language`。Agent 会优先根据 manifest、源码扩展名、框架特征、部署文件、入口命令和 PR diff 自动推断项目组件。
+
+示例：
+
+```text
+apps/demo-shop-backend  → api  → node / typescript / express
+apps/demo-shop-frontend → web  → node / typescript / vite / react
+agent                   → agent workflow → node / typescript
+```
+
+只有在 legacy 项目、polyglot monorepo 或自动识别低置信度时，才需要在 `project.detection.overrides` 中做显式覆盖。
+
 ## 运行前
 
 运行前阶段负责把不稳定的人为判断固化为 workflow：
 
 - 读取 PR diff / 需求文档。
+- 自动识别项目组件、运行时、包管理器和测试入口。
 - 解析部署契约。
 - 规划外部依赖 mock。
 - 分析代码影响范围。
