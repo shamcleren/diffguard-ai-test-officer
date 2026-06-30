@@ -4,11 +4,12 @@
 
 1. [`agent-vs-skill.md`](./agent-vs-skill.md)：解释为什么 DiffGuard 必须是 Agent，而不是一个 Skill。
 2. [`architecture.md`](./architecture.md)：系统架构、状态机和模块边界。
-3. [`development-plan.md`](./development-plan.md)：完整开发计划、里程碑、Backlog 和验收标准。
-4. [`implementation-backlog.md`](./implementation-backlog.md)：按 P0 / P1 / P2 拆分的开发任务列表。
-5. [`project-detection.md`](./project-detection.md)：项目自动识别策略，说明为什么不要求 `language`。
-6. [`deliverables.md`](./deliverables.md)：黑客松交付物清单和演示兜底方案。
-7. [`demo-script.md`](./demo-script.md)：现场演示脚本。
+3. [`runtime-execution.md`](./runtime-execution.md)：v0.2 真实执行模式、执行器和证据输出。
+4. [`development-plan.md`](./development-plan.md)：完整开发计划、里程碑、Backlog 和验收标准。
+5. [`implementation-backlog.md`](./implementation-backlog.md)：按 P0 / P1 / P2 拆分的开发任务列表。
+6. [`project-detection.md`](./project-detection.md)：项目自动识别策略，说明为什么不要求 `language`。
+7. [`deliverables.md`](./deliverables.md)：黑客松交付物清单和演示兜底方案。
+8. [`demo-script.md`](./demo-script.md)：现场演示脚本。
 
 ## 核心设计句
 
