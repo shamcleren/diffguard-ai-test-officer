@@ -1,6 +1,6 @@
 {
   "name": "diffguard-ai-test-officer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "AI 测试官：理解 PR / 需求变更的全链路自动化测试 Agent",
   "type": "module",
@@ -12,6 +12,7 @@
   "scripts": {
     "agent": "tsx agent/src/index.ts",
     "demo": "tsx agent/src/index.ts run --diff examples/pr-diff/coupon-stack.diff --requirement examples/requirements/coupon-stack.md --contract ai-test.yaml --mode dry-run",
+    "demo:execute": "tsx agent/src/index.ts run --diff examples/pr-diff/coupon-stack.diff --requirement examples/requirements/coupon-stack.md --contract ai-test.yaml --mode execute",
     "dev": "concurrently -n backend,frontend,wiremock -c auto \"npm run dev -w apps/demo-shop-backend\" \"npm run dev -w apps/demo-shop-frontend\" \"docker run --rm -p 8089:8080 -v $PWD/mocks/payment:/home/wiremock wiremock/wiremock:3.9.2\"",
     "test": "npm run test -w apps/demo-shop-backend",
     "test:e2e": "playwright test",
