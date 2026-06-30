@@ -1,4 +1,4 @@
-import { createServer, type IncomingMessage } from 'node:http';
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 
 interface JournalEntry {
   request: {
@@ -63,7 +63,7 @@ function readBody(req: IncomingMessage): Promise<string> {
   });
 }
 
-function json(res: Parameters<Parameters<typeof createServer>[0]>[1], statusCode: number, payload: unknown) {
+function json(res: ServerResponse, statusCode: number, payload: unknown) {
   res.statusCode = statusCode;
   res.setHeader('content-type', 'application/json');
   res.end(JSON.stringify(payload));
