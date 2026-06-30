@@ -13,7 +13,7 @@
     "agent": "tsx agent/src/index.ts",
     "demo": "tsx agent/src/index.ts run --diff examples/pr-diff/coupon-stack.diff --requirement examples/requirements/coupon-stack.md --contract ai-test.yaml --mode dry-run",
     "demo:execute": "tsx agent/src/index.ts run --diff examples/pr-diff/coupon-stack.diff --requirement examples/requirements/coupon-stack.md --contract ai-test.yaml --mode execute",
-    "dev": "concurrently -n backend,frontend,wiremock -c auto \"npm run dev -w apps/demo-shop-backend\" \"npm run dev -w apps/demo-shop-frontend\" \"docker run --rm -p 8089:8080 -v $PWD/mocks/payment:/home/wiremock wiremock/wiremock:3.9.2\"",
+    "dev": "concurrently -n backend,frontend,payment-mock -c auto \"npm run dev -w apps/demo-shop-backend\" \"npm run dev -w apps/demo-shop-frontend\" \"tsx mocks/payment/server.ts\"",
     "test": "npm run test -w apps/demo-shop-backend",
     "test:e2e": "playwright test",
     "build": "npm run build -w agent && npm run build -w apps/demo-shop-backend && npm run build -w apps/demo-shop-frontend",
