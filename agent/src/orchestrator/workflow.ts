@@ -5,6 +5,7 @@ import { collectContext } from '../collectors/contextCollector.js';
 import { detectProject } from '../detectors/projectDetector.js';
 import { resolveDeployContract } from '../planners/deployContractResolver.js';
 import { analyzeChange } from '../analyzers/changeAnalyzer.js';
+import { analyzeFailures } from '../analyzers/failureAnalyzer.js';
 import { planMockDependencies } from '../planners/mockDependencyPlanner.js';
 import { planTestMatrix } from '../planners/testMatrixPlanner.js';
 import { provisionEnvironment } from '../executors/environmentProvisioner.js';
@@ -25,16 +26,19 @@ export async function runWorkflow(input: WorkflowInput): Promise<WorkflowResult>
 
   await provisionEnvironment({ contract, mode: input.mode, testRunId });
   const executedMatrix = await executeMatrix({ matrix, contract, mode: input.mode, testRunId });
-  const bundle = bundleEvidence({ testRunId, changeAnalysis, matrix: executedMatrix });
+  const failureAnalysis = analyzeFailures(executedMatrix);
+  const bundle = bundleEvidence({ testRunId, changeAnalysis, matrix: executedMatrix, failureAnalysis });
 
   const detectionPath = join(input.outDir, 'project-detection.json');
   const matrixPath = join(input.outDir, 'test-matrix.json');
   const evidencePath = join(input.outDir, 'evidence-bundle.json');
+  const failurePath = join(input.outDir, 'failure-analysis.json');
   const reportPath = join(input.outDir, 'report.md');
 
   await writeFile(detectionPath, JSON.stringify(projectDetection, null, 2));
   await writeFile(matrixPath, JSON.stringify(executedMatrix, null, 2));
   await writeFile(evidencePath, JSON.stringify(bundle, null, 2));
+  await writeFile(failurePath, JSON.stringify(failureAnalysis, null, 2));
 
   const decision = decide(executedMatrix);
   const report = generateReport({ decision, context, contract, changeAnalysis, matrix: executedMatrix, evidence: bundle });
