@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { WorkflowInput, WorkflowResult, Decision } from '../types.js';
 import { collectContext } from '../collectors/contextCollector.js';
+import { detectProject } from '../detectors/projectDetector.js';
 import { resolveDeployContract } from '../planners/deployContractResolver.js';
 import { analyzeChange } from '../analyzers/changeAnalyzer.js';
 import { planMockDependencies } from '../planners/mockDependencyPlanner.js';
@@ -16,6 +17,7 @@ export async function runWorkflow(input: WorkflowInput): Promise<WorkflowResult>
   await mkdir(input.outDir, { recursive: true });
 
   const context = await collectContext(input);
+  const projectDetection = detectProject(context);
   const contract = await resolveDeployContract(input.contractPath);
   const changeAnalysis = analyzeChange(context);
   const mockPlan = planMockDependencies(contract, changeAnalysis);
@@ -25,10 +27,12 @@ export async function runWorkflow(input: WorkflowInput): Promise<WorkflowResult>
   const executedMatrix = await executeMatrix({ matrix, contract, mode: input.mode, testRunId });
   const bundle = bundleEvidence({ testRunId, changeAnalysis, matrix: executedMatrix });
 
+  const detectionPath = join(input.outDir, 'project-detection.json');
   const matrixPath = join(input.outDir, 'test-matrix.json');
   const evidencePath = join(input.outDir, 'evidence-bundle.json');
   const reportPath = join(input.outDir, 'report.md');
 
+  await writeFile(detectionPath, JSON.stringify(projectDetection, null, 2));
   await writeFile(matrixPath, JSON.stringify(executedMatrix, null, 2));
   await writeFile(evidencePath, JSON.stringify(bundle, null, 2));
 
