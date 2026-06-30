@@ -52,6 +52,7 @@ npm run demo
 `npm run demo` 会执行 Agent dry-run，并生成：
 
 ```text
+reports/project-detection.json
 reports/test-matrix.json
 reports/evidence-bundle.json
 reports/report.md
