@@ -19,11 +19,11 @@ EnvironmentReady
   ↓
 TestMatrixGenerated
   ↓
-TestCasesGenerated
-  ↓
 ExecutionCompleted
   ↓
 EvidenceBundled
+  ↓
+FailureAnalyzed
   ↓
 ReportGenerated
 ```
@@ -55,20 +55,35 @@ npm run demo
 reports/project-detection.json
 reports/test-matrix.json
 reports/evidence-bundle.json
+reports/failure-analysis.json
 reports/report.md
 ```
 
-启动示例业务系统：
+## 真实执行版本
+
+先启动示例业务系统和支付 mock：
 
 ```bash
 npm run dev
 ```
 
-执行浏览器 E2E：
+在另一个终端执行：
 
 ```bash
 npx playwright install chromium
-npm run test:e2e
+npm run demo:execute
+cat reports/report.md
+```
+
+`demo:execute` 会真实执行：
+
+```text
+M-001 API Executor：调用 /api/orders/preview，验证 VIP 优惠券叠加金额
+M-002 Browser Executor：调度 Playwright，收集 screenshot / trace / video
+M-003 API Executor：验证优惠后金额不能小于 0
+M-004 API Executor：验证无优惠普通订单金额
+M-005 Mock Verifier：查询 WireMock request journal，验证支付金额透传
+M-006 Observability Probe：注入 x-ai-test-run-id / traceparent
 ```
 
 ## 黑客松演示主线
