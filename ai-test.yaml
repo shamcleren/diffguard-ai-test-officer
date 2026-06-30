@@ -1,6 +1,5 @@
 app:
   name: demo-shop
-  language: typescript
   repoRoot: .
 
 deploy:
@@ -19,6 +18,13 @@ entrypoints:
     baseUrl: http://localhost:5173
   api:
     baseUrl: http://localhost:3001/api
+
+project:
+  detection:
+    enabled: true
+    confidenceThreshold: 0.75
+    # Optional overrides for legacy / polyglot repositories when automatic detection is ambiguous.
+    overrides: {}
 
 observability:
   enabled: true
