@@ -6,6 +6,17 @@ export interface MockVerifierInput {
   testRunId: string;
 }
 
+interface CallRecord {
+  name?: string;
+  method: string;
+  url: string;
+  status?: number;
+  durationMs?: number;
+  request?: unknown;
+  response?: unknown;
+  error?: string;
+}
+
 export async function executeMockMatrixItem(input: MockVerifierInput): Promise<TestMatrixItem> {
   if (input.item.id !== 'M-005') return input.item;
 
@@ -39,7 +50,7 @@ export async function executeMockMatrixItem(input: MockVerifierInput): Promise<T
   return { ...input.item, status: 'passed', runtimeEvidence };
 }
 
-async function createOrder(contract: DeployContract, testRunId: string): Promise<Record<string, unknown>> {
+async function createOrder(contract: DeployContract, testRunId: string): Promise<CallRecord> {
   const baseUrl = contract.entrypoints.api?.baseUrl;
   if (!baseUrl) return { method: 'POST', url: '/orders', error: 'ai-test.yaml 缺少 entrypoints.api.baseUrl' };
 
@@ -53,7 +64,7 @@ async function createOrder(contract: DeployContract, testRunId: string): Promise
   return postJson(url, body, testRunId, 'M-005 create order with payment mock');
 }
 
-async function readWireMockJournal(contract: DeployContract): Promise<Record<string, unknown>> {
+async function readWireMockJournal(contract: DeployContract): Promise<CallRecord> {
   const payment = contract.dependencies?.['payment-service'];
   const baseUrl = payment?.baseUrl;
   if (!baseUrl) return { method: 'GET', url: '/__admin/requests', error: 'payment-service 缺少 baseUrl' };
@@ -81,7 +92,7 @@ async function readWireMockJournal(contract: DeployContract): Promise<Record<str
   }
 }
 
-async function postJson(url: string, body: unknown, testRunId: string, name: string): Promise<Record<string, unknown>> {
+async function postJson(url: string, body: unknown, testRunId: string, name: string): Promise<CallRecord> {
   const startedAt = Date.now();
 
   try {
