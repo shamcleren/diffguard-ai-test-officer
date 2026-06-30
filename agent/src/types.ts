@@ -30,10 +30,22 @@ export interface ChangeAnalysis {
 }
 
 export interface DeployContract {
-  app: { name: string; language: string; repoRoot: string };
+  app: {
+    name: string;
+    repoRoot: string;
+    /** Optional hint only. Runtime/language should be detected automatically by default. */
+    languageHint?: string;
+  };
   deploy: { type: string; chartPath?: string; valuesFile?: string; namespacePrefix?: string; localFallback?: string };
   healthCheck: { url: string; timeoutSeconds: number };
   entrypoints: { web?: { baseUrl: string }; api?: { baseUrl: string } };
+  project?: {
+    detection?: {
+      enabled?: boolean;
+      confidenceThreshold?: number;
+      overrides?: Record<string, unknown>;
+    };
+  };
   observability?: {
     enabled?: boolean;
     propagationHeaders?: string[];
